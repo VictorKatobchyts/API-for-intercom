@@ -55,13 +55,28 @@ def get_domofone_adress(domofone_adress: Intercom):
 
 @app.post("/add_client", status_code=status.HTTP_201_CREATED)
 def get_client_information(client_information: Client):
-    cursor.execute("""INSERT INTO clients (city, street_name, home_number, entrance_number, ip, mac) VALUES (%s, %s, %s, %s, %s, %s) RETURNING *""", #исправить
-    (domofone_adress.city, domofone_adress.street_name, domofone_adress.home_number, domofone_adress.entrance_number, domofone_adress.ip, domofone_adress.mac))#исправить
+    cursor.execute("""INSERT INTO clients (billing_bd_id, first_name, second_name, patronymic, contract_number, inclusion_date, mobile_number, login, user_password,
+    city, street_name, home_number, entrance_number, apartment_number, status_contract) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING *""", 
+    (client_information.billing_bd_id, client_information.first_name, client_information.second_name, client_information.patronymic, client_information.contract_number,
+    client_information.inclusion_date, client_information.mobile_number, client_information.login, client_information.user_password, client_information.city,
+    client_information.street_name, client_information.home_number, client_information.entrance_number, client_information.apartment_number, client_information.status_contract))
+    new_client = cursor.fetchall()
+    conn.commit()
+    return {"New client information": new_client}
+
+@app.delete("/delete_client/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_client(id:int):
+    cursor.execute("""DELETE FROM clients WHERE client_id = %s returning *""", (str(id)))
+    deleted_client = cursor.fetchall()
+    conn.commit()
+    if deleted_client == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @app.delete("/delete_intercom/{id}", status_code=status.HTTP_204_NO_CONTENT)#удаление информации о домофонах через id домофона
 def delete_intercom(id: int):
     cursor.execute("""DELETE FROM intercoms WHERE intercom_id = %s returning *""", (str(id)))#returning - чтобы показывало содержание удаленного домофона
-    deleted_intercom = cursor.fetchone()#чтобы получить этот удаленные данные домофона
+    deleted_intercom = cursor.fetchall()#чтобы получить этот удаленные данные домофона
     conn.commit()
     if deleted_intercom == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"intercom with id: {id} does not exist")
