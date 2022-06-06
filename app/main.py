@@ -1,14 +1,22 @@
 from ast import Param
 from email import message
 from colorama import Cursor
-from fastapi import  FastAPI, HTTPException, status, Response
+from fastapi import  FastAPI, HTTPException, status, Response, Depends
 from fastapi.params import Body
 from pydantic import BaseModel
 import requests
 import psycopg2
 from psycopg2.extras import RealDictCursor #штука нужна только для текущей бибилотеки для работы с бд
 import time
+from sqlalchemy.orm import Session
+from . import models
+from .database import engine, get_db
+
+models.Base.metadata.create_all(bind=engine)
+
 app = FastAPI()
+
+
 class Intercom (BaseModel):
     city: str
     street_name: str
@@ -48,23 +56,33 @@ while True:
         time.sleep(2)
 
 
+
 @app.post("/add_intercom", status_code=status.HTTP_201_CREATED)
-def get_domofone_adress(domofone_adress: Intercom):
-    cursor.execute("""INSERT INTO intercoms (city, street_name, home_number, entrance_number, ip, mac) VALUES (%s, %s, %s, %s, %s, %s) RETURNING *""", 
-    (domofone_adress.city, domofone_adress.street_name, domofone_adress.home_number, domofone_adress.entrance_number, domofone_adress.ip, domofone_adress.mac))
-    new_domofone = cursor.fetchall()
-    conn.commit()#каждый раз когда в базу посылаем новые данные, должны закоммитить их чтобы бд обновилась
+def get_domofone_adress(domofone_adress: Intercom, db: Session = Depends(get_db)):
+    # cursor.execute("""INSERT INTO intercoms (city, street_name, home_number, entrance_number, ip, mac) VALUES (%s, %s, %s, %s, %s, %s) RETURNING *""", 
+    # (domofone_adress.city, domofone_adress.street_name, domofone_adress.home_number, domofone_adress.entrance_number, domofone_adress.ip, domofone_adress.mac))
+    # new_domofone = cursor.fetchall()
+    # conn.commit()#каждый раз когда в базу посылаем новые данные, должны закоммитить их чтобы бд обновилась
+    # **-для распаковки этого словаря
+    new_domofone = models.Intercom(**domofone_adress.dict())#city=domofone_adress.city, street_name=domofone_adress.street_name, home_number=domofone_adress.home_number, entrance_number=domofone_adress.entrance_number, ip=domofone_adress.ip,mac= domofone_adress.mac
+    db.add(new_domofone)#добавили в базу новый домофон
+    db.commit()#закоммитили добавление
+    db.refresh(new_domofone)
     return {"New intercom adress": new_domofone}
 
 @app.post("/add_client", status_code=status.HTTP_201_CREATED)
-def get_client_information(client_information: Client):
-    cursor.execute("""INSERT INTO clients (billing_bd_id, first_name, second_name, patronymic, contract_number, inclusion_date, mobile_number, login, user_password,
-    city, street_name, home_number, entrance_number, apartment_number, status_contract) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING *""", 
-    (client_information.billing_bd_id, client_information.first_name, client_information.second_name, client_information.patronymic, client_information.contract_number,
-    client_information.inclusion_date, client_information.mobile_number, client_information.login, client_information.user_password, client_information.city,
-    client_information.street_name, client_information.home_number, client_information.entrance_number, client_information.apartment_number, client_information.status_contract))
-    new_client = cursor.fetchall()
-    conn.commit()
+def get_client_information(client_information: Client, db: Session = Depends(get_db)):
+    # cursor.execute("""INSERT INTO clients (billing_bd_id, first_name, second_name, patronymic, contract_number, inclusion_date, mobile_number, login, user_password,
+    # city, street_name, home_number, entrance_number, apartment_number, status_contract) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING *""", 
+    # (client_information.billing_bd_id, client_information.first_name, client_information.second_name, client_information.patronymic, client_information.contract_number,
+    # client_information.inclusion_date, client_information.mobile_number, client_information.login, client_information.user_password, client_information.city,
+    # client_information.street_name, client_information.home_number, client_information.entrance_number, client_information.apartment_number, client_information.status_contract))
+    # new_client = cursor.fetchall()
+    # conn.commit()
+    new_client= models.Client(**client_information.dict())
+    db.add(new_client)
+    db.commit()
+    db.refresh(new_client)
     return {"New client information": new_client}
 
 @app.delete("/delete_client/{id}", status_code=status.HTTP_204_NO_CONTENT)
