@@ -1,5 +1,6 @@
 from ast import Param
 from email import message
+from statistics import mode
 from colorama import Cursor
 from fastapi import  FastAPI, HTTPException, status, Response, Depends
 from fastapi.params import Body
@@ -86,31 +87,41 @@ def get_client_information(client_information: Client, db: Session = Depends(get
     return {"New client information": new_client}
 
 @app.delete("/delete_client/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_client(id:int):
-    cursor.execute("""DELETE FROM clients WHERE client_id = %s returning *""", (str(id)))
-    deleted_client = cursor.fetchall()
-    conn.commit()
-    if deleted_client == None:
+def delete_client(id:int, db: Session = Depends(get_db)):
+    # cursor.execute("""DELETE FROM clients WHERE client_id = %s returning *""", (str(id)))
+    # deleted_client = cursor.fetchall()
+    # conn.commit()
+    deleted_client = db.query(models.Client).filter(models.Client.client_id == id)
+    if deleted_client.first() == None: 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
+    deleted_client.delete(synchronize_session=False)#читай документацию SQLAlchemy
+    db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @app.delete("/delete_intercom/{id}", status_code=status.HTTP_204_NO_CONTENT)#удаление информации о домофонах через id домофона
-def delete_intercom(id: int):
-    cursor.execute("""DELETE FROM intercoms WHERE intercom_id = %s returning *""", (str(id)))#returning - чтобы показывало содержание удаленного домофона
-    deleted_intercom = cursor.fetchall()#чтобы получить этот удаленные данные домофона
-    conn.commit()
-    if deleted_intercom == None:
+def delete_intercom(id: int, db: Session = Depends(get_db)):
+    # cursor.execute("""DELETE FROM intercoms WHERE intercom_id = %s returning *""", (str(id)))#returning - чтобы показывало содержание удаленного домофона
+    # deleted_intercom = cursor.fetchall()#чтобы получить этот удаленные данные домофона
+    # conn.commit()
+    deleted_intercom = db.query(models.Intercom).filter(models.Intercom.intercom_id == id)
+    if deleted_intercom.first() == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"intercom with id: {id} does not exist")
+    deleted_intercom.delete(synchronize_session=False)
+    db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @app.put("/update_status_contract/{id}")#запрос на обновление статуса договора
-def update_status_contract(id: int, updated_status_contract: Update_Status_contract): 
-    cursor.execute("""UPDATE clients SET status_contract = %s WHERE billing_bd_id = %s RETURNING *""", (updated_status_contract.status_contract, id))
-    updated_client_information = cursor.fetchone()
-    conn.commit()
-    if update_status_contract == None:
+def update_status_contract(id: int, updated_status_contract: Update_Status_contract, db: Session = Depends(get_db)): 
+    # cursor.execute("""UPDATE clients SET status_contract = %s WHERE billing_bd_id = %s RETURNING *""", (updated_status_contract.status_contract, id))
+    # updated_client_information = cursor.fetchone()
+    # conn.commit()
+    update_status_contract = db.query(models.Client).filter(models.Client.billing_bd_id == id)
+    new_status_contract = update_status_contract.first()
+    if new_status_contract == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
-    return {'data': updated_client_information}
+    update_status_contract.update(updated_status_contract.dict(), synchronize_session=False)
+    db.commit()
+    return {'data': update_status_contract.first()}
 
 @app.put("/update_client_information/{id}")#запрос на обновление информации об абоненте (принимает всю полностью инфу, даже не обновленную)
 def update_client_information(id: int, updated_client_information: Client ):
