@@ -124,18 +124,22 @@ def update_status_contract(id: int, updated_status_contract: Update_Status_contr
     return {'data': update_status_contract.first()}
 
 @app.put("/update_client_information/{id}")#запрос на обновление информации об абоненте (принимает всю полностью инфу, даже не обновленную)
-def update_client_information(id: int, updated_client_information: Client ):
-    cursor.execute("""UPDATE clients SET billing_bd_id = %s, first_name = %s, second_name = %s, patronymic = %s, contract_number = %s, inclusion_date = %s, 
-    mobile_number = %s, login = %s, user_password = %s,city = %s, street_name = %s, home_number = %s, entrance_number = %s, apartment_number = %s, status_contract = %s 
-    WHERE billing_bd_id = %s RETURNING *""", (updated_client_information.billing_bd_id, updated_client_information.first_name, updated_client_information.second_name, 
-    updated_client_information.patronymic, updated_client_information.contract_number,updated_client_information.inclusion_date, updated_client_information.mobile_number, 
-    updated_client_information.login,  updated_client_information.user_password, updated_client_information.city, updated_client_information.street_name, 
-    updated_client_information.home_number, updated_client_information.entrance_number, updated_client_information.apartment_number, updated_client_information.status_contract, id))
-    updated_client_information = cursor.fetchone()
-    conn.commit()
-    if update_client_information == None:
+def update_client_information(id: int, updated_client_information: Client, db: Session = Depends(get_db)):
+    # cursor.execute("""UPDATE clients SET billing_bd_id = %s, first_name = %s, second_name = %s, patronymic = %s, contract_number = %s, inclusion_date = %s, 
+    # mobile_number = %s, login = %s, user_password = %s,city = %s, street_name = %s, home_number = %s, entrance_number = %s, apartment_number = %s, status_contract = %s 
+    # WHERE billing_bd_id = %s RETURNING *""", (updated_client_information.billing_bd_id, updated_client_information.first_name, updated_client_information.second_name, 
+    # updated_client_information.patronymic, updated_client_information.contract_number,updated_client_information.inclusion_date, updated_client_information.mobile_number, 
+    # updated_client_information.login,  updated_client_information.user_password, updated_client_information.city, updated_client_information.street_name, 
+    # updated_client_information.home_number, updated_client_information.entrance_number, updated_client_information.apartment_number, updated_client_information.status_contract, id))
+    # updated_client_information = cursor.fetchone()
+    # conn.commit()
+    update_client_information = db.query(models.Client).filter(models.Client.billing_bd_id == id)
+    new_client_information = update_client_information.first()
+    if new_client_information == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
-    return {'data': updated_client_information}
+    update_client_information.update(updated_client_information.dict(), synchronize_session=False)
+    db.commit()
+    return {'data': update_client_information.first()}
 @app.post("/{id}")   
 def send_to_open(id):
     if id == '25':#?action=maindoor&user=admin&pwd=2c4d959166
