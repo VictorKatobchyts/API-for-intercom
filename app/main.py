@@ -44,7 +44,7 @@ def get_domofone_adress(domofone_adress: schemas.Intercom, db: Session = Depends
     db.add(new_domofone)#добавили в базу новый домофон
     db.commit()#закоммитили добавление
     db.refresh(new_domofone)
-    return {"New intercom adress": new_domofone}
+    return  new_domofone
 
 @app.post("/add_client", status_code=status.HTTP_201_CREATED)
 def get_client_information(client_information: schemas.Client, db: Session = Depends(get_db)):
@@ -59,7 +59,7 @@ def get_client_information(client_information: schemas.Client, db: Session = Dep
     db.add(new_client)
     db.commit()
     db.refresh(new_client)
-    return {"New client information": new_client}
+    return  new_client
 
 @app.delete("/delete_client/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_client(id:int, db: Session = Depends(get_db)):
@@ -96,7 +96,7 @@ def update_status_contract(id: int, updated_status_contract: schemas.Update_Stat
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
     update_status_contract.update(updated_status_contract.dict(), synchronize_session=False)
     db.commit()
-    return {'data': update_status_contract.first()}
+    return  update_status_contract.first()
 
 @app.put("/update_client_information/{id}")#запрос на обновление информации об абоненте (принимает всю полностью инфу, даже не обновленную)
 def update_client_information(id: int, updated_client_information: schemas.Client, db: Session = Depends(get_db)):
@@ -114,23 +114,23 @@ def update_client_information(id: int, updated_client_information: schemas.Clien
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
     update_client_information.update(updated_client_information.dict(), synchronize_session=False)
     db.commit()
-    return {'data': update_client_information.first()}
+    return  update_client_information.first()
 @app.post("/open_door")   
 def send_to_open():
     #?action=maindoor&user=admin&pwd=2c4d959166
         #первый запрос для истории http://172.22.1.67/cgi-bin/intercom_cgi?action=get&user=admin&pwd=2c4d959166
-    #payload = {'action': 'maindoor', 'user': 'admin', 'pwd': '2c4d959166'}
+    payload = {'action': 'maindoor', 'user': 'admin', 'pwd': 'f90b381d9f'}
         #payload = {'action': 'get','user': 'admin', 'pwd': '2c4d959166'}
-    #resolve = requests.get('http://172.22.1.67/cgi-bin/intercom_cgi', params=payload1)
-    payload1 = {'action': 'set', 'TickerText': 'vash internet', 'user': 'admin', 'pwd': '2c4d959166'}
+    resolve = requests.get('http://172.22.1.67/cgi-bin/intercom_cgi', params=payload)
+    #payload1 = {'action': 'set', 'TickerText': 'vash internet', 'user': 'admin', 'pwd': 'f90b381d9f'}
         #payload1 = {'action': 'get', 'user': 'admin', 'pwd': '2c4d959166'}
-    resolve1 = requests.get ('http://172.22.1.67/cgi-bin/display_cgi', params=payload1)
+    #resolve1 = requests.get ('http://172.22.1.67/cgi-bin/display_cgi', params=payload1)
         #payload2 = {'action': 'get', 'user': 'admin', 'pwd': '2c4d959166'}
         #resolve2 = requests.get('http://172.22.1.67/cgi-bin/display_cgi', params=payload2)
  
-    print(resolve1.url)
+    print(resolve.url)
         #print(resolve1.url)
-    return resolve1.content
+    return resolve.content
     #return {"message": "succesfully open"}
     
     #raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= f"{id} apartment does not exist")
