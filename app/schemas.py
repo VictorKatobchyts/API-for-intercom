@@ -2,28 +2,27 @@ from pydantic import BaseModel
 
 class Intercom (BaseModel):
     city: str
-    street_name: str
-    home_number: str
-    entrance_number: str
+    street: str
+    house: str
+    entrance: str
     ip: str
     mac: str
 
 class Client (BaseModel):
-    billing_bd_id: str
+    contract_id: str
     first_name: str
     second_name: str
     patronymic: str
     contract_number: str
-    inclusion_date: str
-    mobile_number: str
-    login: str
-    user_password: str
+    contract_date: str
+    phone: str
+    password: str
     city: str
-    street_name: str
-    home_number: str
-    entrance_number: str
-    apartment_number: str
-    status_contract: str
-    
-class Update_Status_contract (BaseModel):
-    status_contract: str
+    street: str
+    house: str
+    entrance: str
+    flat: str
+    contract_status: str
+
+class Update_Contract_status (BaseModel):
+    contract_status: str

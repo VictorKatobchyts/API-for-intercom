@@ -86,17 +86,17 @@ def delete_intercom(id: int, db: Session = Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @app.put("/update_status_contract/{id}")#запрос на обновление статуса договора
-def update_status_contract(id: int, updated_status_contract: schemas.Update_Status_contract, db: Session = Depends(get_db)): 
+def update_status_contract(id: int, updated_contract_status: schemas.Update_Contract_status, db: Session = Depends(get_db)): 
     # cursor.execute("""UPDATE clients SET status_contract = %s WHERE billing_bd_id = %s RETURNING *""", (updated_status_contract.status_contract, id))
     # updated_client_information = cursor.fetchone()
     # conn.commit()
-    update_status_contract = db.query(models.Client).filter(models.Client.billing_bd_id == id)
-    new_status_contract = update_status_contract.first()
-    if new_status_contract == None:
+    update_contract_status = db.query(models.Client).filter(models.Client.contract_id == id)
+    new_contract_status = update_contract_status.first()
+    if new_contract_status == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
-    update_status_contract.update(updated_status_contract.dict(), synchronize_session=False)
+    update_contract_status.update(updated_contract_status.dict(), synchronize_session=False)
     db.commit()
-    return  update_status_contract.first()
+    return  update_contract_status.first()
 
 @app.put("/update_client_information/{id}")#запрос на обновление информации об абоненте (принимает всю полностью инфу, даже не обновленную)
 def update_client_information(id: int, updated_client_information: schemas.Client, db: Session = Depends(get_db)):
@@ -108,7 +108,7 @@ def update_client_information(id: int, updated_client_information: schemas.Clien
     # updated_client_information.home_number, updated_client_information.entrance_number, updated_client_information.apartment_number, updated_client_information.status_contract, id))
     # updated_client_information = cursor.fetchone()
     # conn.commit()
-    update_client_information = db.query(models.Client).filter(models.Client.billing_bd_id == id)
+    update_client_information = db.query(models.Client).filter(models.Client.contract_id == id)
     new_client_information = update_client_information.first()
     if new_client_information == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
@@ -131,6 +131,7 @@ def send_to_open():
     print(resolve.url)
         #print(resolve1.url)
     return resolve.content
+  
     #return {"message": "succesfully open"}
     
     #raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= f"{id} apartment does not exist")

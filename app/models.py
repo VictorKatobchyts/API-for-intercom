@@ -4,30 +4,29 @@ from .database import Base
 class Client(Base):
     __tablename__ = "clients"
 
-    client_id = Column(Integer, primary_key=True, nullable=False) 
-    billing_bd_id = Column(Integer, nullable=False)
-    first_name = Column(String, nullable=False)
-    second_name = Column(String, nullable=False)
+    client_id = Column(Integer, primary_key=True, nullable=True) 
+    contract_id = Column(Integer, nullable=True)#id  в базе данных биллинга
+    first_name = Column(String, nullable=True)
+    second_name = Column(String, nullable=True)
     patronymic = Column(String, nullable=True)
-    contract_number = Column(String, nullable=False)
-    inclusion_date = Column(Date, nullable=False)
-    mobile_number = Column(String, nullable=False)
-    login = Column(String, nullable=False)
-    user_password = Column(String, nullable=False)
-    city = Column(String, nullable=False)
-    street_name = Column(String, nullable=False)
-    home_number = Column(String, nullable=False)
-    entrance_number = Column(String, nullable=True)
-    apartment_number = Column(Integer, nullable=False)
-    status_contract = Column(String, nullable=False)
+    contract_number = Column(String, nullable=True) #=login
+    contract_date = Column(Date, nullable=True)#дата включения абонента
+    phone = Column(String, nullable=True)#номер телефона
+    password = Column(String, nullable=True)
+    city = Column(String, nullable=True)
+    street = Column(String, nullable=True)#название улицы
+    house = Column(String, nullable=True)#номер дома
+    entrance = Column(String, nullable=True)#номер подъезда
+    flat = Column(Integer, nullable=True)#номер квартиры
+    contract_status = Column(String, nullable=True)
 
 class Intercom(Base):
     __tablename__ = "intercoms"
     intercom_id = Column(Integer, primary_key=True, nullable=False)
     city = Column(String, nullable=False)
-    street_name = Column(String, nullable=False)
-    home_number = Column(String, nullable=False)
-    entrance_number = Column(String, nullable=True)
+    street = Column(String, nullable=False)
+    house = Column(String, nullable=False)
+    entrance = Column(String, nullable=True)
     ip = Column(String, nullable=False)
     mac = Column(String, nullable=False)
 
