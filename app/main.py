@@ -115,6 +115,37 @@ def update_client_information(id: int, updated_client_information: schemas.Clien
     update_client_information.update(updated_client_information.dict(), synchronize_session=False)
     db.commit()
     return  update_client_information.first()
+
+@app.put("/update_first_name/{id}")
+def update_first_name(id: int, updated_first_name: schemas.Update_first_name, db: Session = Depends(get_db)):
+    update_first_name = db.query(models.Client).filter(models.Client.contract_id == id)
+    new_first_name = update_first_name.first()
+    if new_first_name == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
+    update_first_name.update(updated_first_name.dict(), synchronize_session=False)
+    db.commit()
+    return  update_first_name.first()
+
+@app.put("/update_second_name/{id}")
+def update_second_name(id: int, updated_second_name: schemas.Update_second_name, db: Session = Depends(get_db)):
+    update_second_name = db.query(models.Client).filter(models.Client.contract_id == id)
+    new_second_name = update_second_name.first()
+    if new_second_name == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
+    update_second_name.update(updated_second_name.dict(), synchronize_session=False)
+    db.commit()
+    return  update_second_name.first()
+
+@app.put("/update_patronymic/{id}")
+def update_patronymic(id: int, updated_patronymic: schemas.Update_patronymic, db: Session = Depends(get_db)):
+    update_patronymic = db.query(models.Client).filter(models.Client.contract_id == id)
+    new_patronymic = update_patronymic.first()
+    if new_patronymic == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
+    update_patronymic.update(updated_patronymic.dict(), synchronize_session=False)
+    db.commit()
+    return  update_patronymic.first()
+
 @app.post("/open_door")   
 def send_to_open():
     #?action=maindoor&user=admin&pwd=2c4d959166

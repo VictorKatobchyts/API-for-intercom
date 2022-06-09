@@ -26,3 +26,40 @@ class Client (BaseModel):
 
 class Update_Contract_status (BaseModel):
     contract_status: str
+
+class Update_first_name (BaseModel):
+    first_name: str
+
+class Update_second_name (BaseModel):
+    second_name: str
+
+class Update_patronymic (BaseModel):
+    patronymic: str
+
+class Update_contract_number (BaseModel):
+    contract_number: str
+
+class Update_phone (BaseModel):
+    phone: str
+
+class Update_password (BaseModel):
+    password: str
+
+class Update_city (BaseModel):
+    city: str
+
+class Update_street (BaseModel):
+    street: str
+
+class Update_house (BaseModel):
+    house: str
+
+class Update_entrance (BaseModel):
+     entrance: str
+
+class Update_flat (BaseModel):
+    flat: str
+
+
+
+
