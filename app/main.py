@@ -146,6 +146,76 @@ def update_patronymic(id: int, updated_patronymic: schemas.Update_patronymic, db
     db.commit()
     return  update_patronymic.first()
 
+@app.put("/update_contract_number/{id}")
+def update_contract_number(id: int, updated_contract_number: schemas.Update_contract_number, db: Session = Depends(get_db)):
+    update_contract_number = db.query(models.Client).filter(models.Client.contract_id == id)
+    new_contract_number = update_contract_number.first()
+    if new_contract_number == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
+    update_contract_number.update(updated_contract_number.dict(), synchronize_session=False)
+    db.commit()
+    return  update_contract_number.first()
+
+@app.put("/update_password/{id}")
+def update_password(id: int, updated_password: schemas.Update_password, db: Session = Depends(get_db)):
+    update_password = db.query(models.Client).filter(models.Client.contract_id == id)
+    new_password = update_password.first()
+    if new_password == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
+    update_password.update(updated_password.dict(), synchronize_session=False)
+    db.commit()
+    return  update_password.first()
+
+@app.put("/update_city/{id}")
+def update_city(id: int, updated_city: schemas.Update_city, db: Session = Depends(get_db)):
+    update_city = db.query(models.Client).filter(models.Client.contract_id == id)
+    new_city = update_city.first()
+    if new_city == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
+    update_city.update(updated_city.dict(), synchronize_session=False)
+    db.commit()
+    return  update_city.first()
+
+@app.put("/update_street/{id}")
+def update_street(id: int, updated_street: schemas.Update_street, db: Session = Depends(get_db)):
+    update_street = db.query(models.Client).filter(models.Client.contract_id == id)
+    new_street = update_street.first()
+    if new_street == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
+    update_street.update(updated_street.dict(), synchronize_session=False)
+    db.commit()
+    return  update_street.first()
+
+@app.put("/update_house/{id}")
+def update_house(id: int, updated_house: schemas.Update_house, db: Session = Depends(get_db)):
+    update_house = db.query(models.Client).filter(models.Client.contract_id == id)
+    new_house = update_house.first()
+    if new_house == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
+    update_house.update(updated_house.dict(), synchronize_session=False)
+    db.commit()
+    return  update_house.first()
+
+@app.put("/update_entrance/{id}")
+def update_entrance(id: int, updated_entrance: schemas.Update_entrance, db: Session = Depends(get_db)):
+    update_entrance = db.query(models.Client).filter(models.Client.contract_id == id)
+    new_entrance = update_entrance.first()
+    if new_entrance == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
+    update_entrance.update(updated_entrance.dict(), synchronize_session=False)
+    db.commit()
+    return  update_entrance.first()
+
+@app.put("/update_flat/{id}")
+def update_flat(id: int, updated_flat: schemas.Update_flat, db: Session = Depends(get_db)):
+    update_flat = db.query(models.Client).filter(models.Client.contract_id == id)
+    new_flat = update_flat.first()
+    if new_flat == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
+    update_flat.update(updated_flat.dict(), synchronize_session=False)
+    db.commit()
+    return  update_flat.first()
+
 @app.post("/open_door")   
 def send_to_open():
     #?action=maindoor&user=admin&pwd=2c4d959166
