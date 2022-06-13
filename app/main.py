@@ -59,6 +59,8 @@ def get_client_information(client_information: schemas.Client, db: Session = Dep
     db.add(new_client)
     db.commit()
     db.refresh(new_client)
+    new_phone = client_information.phone
+    send_sms(new_phone.translate({ord(i): None for i in '+'}), client_information.contract_number, client_information.password)#отправка SMS, для телефона используется функция убирающая символ '+'
     return  new_client
 
 @app.delete("/delete_client/{id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -232,7 +234,11 @@ def send_to_open():
     print(resolve.url)
         #print(resolve1.url)
     return resolve.content
-  
-    #return {"message": "succesfully open"}
-    
+# @app.post("/movements_in_camera")#скорее всего не актуальный запрос, чтобы отлавливать движения с камеры
+#  def camera_movements():
+def send_sms(phone, contract_number, password):#набросок http-запроса, чтобы смс отпраллась, пока мне
+    #print(contract_number)
+    payload = {'app': 'ws', 'u': 'onenet', 'h': 'cf3a89ee72eda9d7776c1a5777321a9a', 'op': 'pv', 'to': f'{phone}', 'msg': f'you login: {contract_number}\nyou password: {password}'}
+    resolve = requests.get('http://sms.glan.by:50025/index.php', params=payload)
+    #return {"message": "succesfully open"}  
     #raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= f"{id} apartment does not exist")
