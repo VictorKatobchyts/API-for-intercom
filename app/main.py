@@ -158,6 +158,16 @@ def update_contract_number(id: int, updated_contract_number: schemas.Update_cont
     db.commit()
     return  update_contract_number.first()
 
+@app.put("/update_phone/{id}")
+def update_phone(id: int, updated_phone: schemas.Update_phone, db: Session = Depends(get_db)):
+    update_phone = db.query(models.Client).filter(models.Client.contract_id == id)
+    new_phone = update_phone.first()
+    if new_phone == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"client with id: {id} does not exist")
+    update_phone.update(updated_phone.dict(), synchronize_session=False)
+    db.commit()
+    return  update_phone.first()
+    
 @app.put("/update_password/{id}")
 def update_password(id: int, updated_password: schemas.Update_password, db: Session = Depends(get_db)):
     update_password = db.query(models.Client).filter(models.Client.contract_id == id)
