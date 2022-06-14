@@ -44,3 +44,27 @@ Request body
 *{
   "first_name": "string"
 }*
+### put-запрос на изменение фамилии в базе данных пользоватлей http://127.0.0.1:8000/update_second_name/id
+, где id - id-пользователя в базе биллинга<br />
+Request body
+*{
+  "second_name": "string"
+}*
+### put-запрос на изменение отчества в базе данных пользоватлей http://127.0.0.1:8000/update_patronymic/id
+, где id - id-пользователя в базе биллинга<br />
+Request body
+*{
+  "patronymic": "string"
+}*
+### put-запрос на изменение номера договора в базе данных пользоватлей http://127.0.0.1:8000/update_contract_number/id
+, где id - id-пользователя в базе биллинга<br />
+Request body
+*{
+  "contract_number": "string"
+}*
+### put-запрос на изменение телефона в базе данных пользоватлей http://127.0.0.1:8000/update_phone/id
+, где id - id-пользователя в базе биллинга<br />
+Request body
+*{
+  "phone": "string"
+}*
