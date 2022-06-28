@@ -1,4 +1,7 @@
-from sqlalchemy import Column, Integer, String, Date
+from datetime import datetime
+from xmlrpc.client import DateTime
+from sqlalchemy import Column, ForeignKey, Integer, String, Date
+from sqlalchemy.orm import relationship
 from .database import Base
 
 class Client(Base):
@@ -18,17 +21,26 @@ class Client(Base):
     house = Column(String, nullable=True)#номер дома
     entrance = Column(String, nullable=True)#номер подъезда
     flat = Column(Integer, nullable=True)#номер квартиры
+    letter = Column(String, nullable=True)#литера (буква в номере квартиры, если например общага)
     contract_status = Column(String, nullable=True)
 
 class Intercom(Base):
     __tablename__ = "intercoms"
     intercom_id = Column(Integer, primary_key=True, nullable=False)
-    city = Column(String, nullable=False)
-    street = Column(String, nullable=False)
-    house = Column(String, nullable=False)
     entrance = Column(String, nullable=True)
     ip = Column(String, nullable=False)
     mac = Column(String, nullable=False)
+    home_id = Column(Integer, ForeignKey("homes.id"))
+
+class Home(Base):
+    __tablename__ = "homes"
+    home_id = Column(Integer, primary_key=True, nullable=False)
+    date_registration = Column(DateTime, nullable=False) #дата регистрации дома (и время тоже нужно)
+    city = Column(String, nullable=False)#город
+    area = Column(String, nullable=True)#район 
+    street = Column(String, nullable=False)#название улицы
+    house = Column(String, nullable=False)#номер дома
+    intercom = relationship("Intercom")
 
 
 
