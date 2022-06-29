@@ -42,5 +42,11 @@ class Home(Base):
     house = Column(String, nullable=False)#номер дома
     intercom = relationship("Intercom")
 
+class Staff(Base):
+    __tablename__ = "staff"
+    staff_id = Column(Integer, primary_key=True, nullable=False)
+    name = Column(String, nullable=False)#имя сотрудника
+    staff_login = Column(String, nullable=False)#логин сотрудника
+    passsword = Column(String, nullable=False)#пароль сотрудника
 
 
