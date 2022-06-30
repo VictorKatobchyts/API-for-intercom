@@ -49,4 +49,13 @@ class Staff(Base):
     staff_login = Column(String, nullable=False)#логин сотрудника
     passsword = Column(String, nullable=False)#пароль сотрудника
 
+class Log(Base):
+    __tablename__ = "logs"
+    primaryKeyValue = Column(Integer, primary_key=True, nullable=False)
+    user_name = Column(Integer, nullable=False)#имя пользователя, внесшего изменения
+    operationDateTime = Column(DateTime, nullable=False)#дата/время изменения
+    tableName = Column(String, nullable=False)#название таблицы, куда было внесено изменение
+    OperationType = Column(String, nullable=False)#тип операции (создание/изменение/удаление)
+    OperationData = Column(String, nullable=False)#сведения об операции, необходимые для понимания того, что было изменено
+
 
